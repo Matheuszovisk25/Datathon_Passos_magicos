@@ -1,4 +1,4 @@
-
+scikit-learn
 streamlit
 Pillow
 streamlit-option-menu
