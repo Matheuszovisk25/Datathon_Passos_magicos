@@ -3,6 +3,12 @@ from PIL import Image
 from streamlit_option_menu import option_menu
 import joblib
 import numpy as np
+import matplotlib.pyplot as plt
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+from scipy.stats import gaussian_kde
+import pandas as pd
+import plotly.express as px
 
 st.set_page_config(
     page_title="Passos Mágicos",
@@ -145,11 +151,196 @@ def exibir_ronaldo():
             unsafe_allow_html=True
         )
 
+
+
+# Função para exibir a seção "Cassia"
 def exibir_cassia():
     st.subheader("Análises - Cassia")
 
+    # Carregamento dos datasets
+    df_2020 = pd.read_csv('df_2020.csv')
+    df_2021 = pd.read_csv('df_2021.csv')
+    df_2022 = pd.read_csv('df_2022.csv')
+    df_geral = pd.read_csv('df_geral.csv')
+    
+    # Limpeza dos dados
+    df_cleaned = df_geral.dropna()
+    
+    # Função para gerar gráficos de INDE por ano
+    def gerar_graficos_inde_ano(df_inde, ano_especifico):
+        df_inde['INDE'] = pd.to_numeric(df_inde['INDE'], errors='coerce')
+        df_ano = df_inde[df_inde['ANO'] == ano_especifico]
+        inde = df_ano['INDE'].dropna()
+        media_inde = inde.mean()
+
+        fig = make_subplots(rows=1, cols=2, subplot_titles=(f'Distribuição - {ano_especifico}', 'Boxplot'),
+                            column_widths=[0.6, 0.4])
+
+        fig.add_trace(go.Histogram(x=inde, nbinsx=10, opacity=0.7, name=f'Histograma {ano_especifico}',
+                                   marker=dict(color='blue', line=dict(color='lightblue', width=1))), row=1, col=1)
+
+        kde = gaussian_kde(inde)
+        x_vals = np.linspace(min(inde), max(inde), 100)
+        kde_vals = kde(x_vals)
+
+        fig.add_trace(go.Scatter(x=x_vals, y=kde_vals * len(inde), mode='lines', line=dict(color='red'), name='KDE'),
+                      row=1, col=1)
+
+        fig.add_trace(go.Box(y=inde, boxmean=True, boxpoints=False, marker_color='#D2691E', name='Boxplot'), row=1, col=2)
+
+        fig.add_annotation(x=1, y=media_inde, xref="x2", yref="y2", text=f"Média: {media_inde:.1f}", showarrow=False,
+                           font=dict(size=12, color="black"), align="center", bordercolor="black", borderwidth=1,
+                           borderpad=4, bgcolor="white", opacity=0.8)
+
+        fig.update_layout(title_text=f'Análise de INDE - {ano_especifico}', xaxis_title='Valor', yaxis_title='Frequência',
+                          template='plotly_white', showlegend=True, height=800, width=1200)
+
+        st.plotly_chart(fig)
+
+    # Função para gráfico comparativo de INDE entre anos
+    def box_plot_comparative(data_anos, labels, title):
+        fig = go.Figure()
+        for i, data in enumerate(data_anos):
+            data['INDE'] = pd.to_numeric(data['INDE'], errors='coerce')
+            fig.add_trace(go.Box(y=data['INDE'], boxmean=True, boxpoints=False, marker_color='#D2691E', name=labels[i]))
+
+            mean_value = np.mean(data['INDE'])
+            fig.add_trace(go.Scatter(x=[i-0.2, i+0.2], y=[mean_value, mean_value], mode="lines",
+                                     line=dict(color="red", width=2, dash='dash'), name=f'Média {labels[i]}: {mean_value:.1f}'))
+
+        fig.update_layout(title=title, yaxis_title='Valores', xaxis_title='Anos', template='plotly_white', boxgap=0.30,
+                          boxgroupgap=0.3, showlegend=True, height=600, width=1000)
+        st.plotly_chart(fig)
+
+    # Função para gráfico de radar reduzido em mais 25%
+    def radar_chart(df, title):
+        labels = df['Métricas'].values
+        values = df['Valores'].values
+
+        # Adicionar o primeiro valor ao final para fechar o gráfico
+        values = np.concatenate((values, [values[0]]))
+
+        # Criar ângulos igualmente espaçados para cada métrica
+        angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+        angles += angles[:1]
+
+        # Reduzindo o tamanho do gráfico de radar em 25% a mais (figsize ajustado para 50% do original)
+        fig, ax = plt.subplots(figsize=(2.5, 2.5), subplot_kw=dict(polar=True))  # Tamanho ainda menor
+
+        # Plotar os dados
+        ax.fill(angles, values, color='orange', alpha=0.25)
+        ax.plot(angles, values, color='#D2691E', linewidth=2)
+
+        # Adicionar os rótulos das métricas
+        ax.set_xticks(angles[:-1])
+        ax.set_xticklabels(labels)
+
+        # Adicionar os valores ao lado de cada ponto
+        for i, (angle, value) in enumerate(zip(angles, values)):
+            if i < len(labels):
+                ax.text(angle, value + 0.5, f'{value:.1f}', ha='center', va='center', fontsize=10, color='blue')
+
+        # Ocultar os números dos eixos
+        ax.set_yticklabels([])
+
+        # Título do gráfico
+        plt.title(title, size=15, color='black', y=1.1)
+        st.pyplot(fig)
+
+    # Gráficos de INDE por ano
+    st.write("## Análise de INDE")
+    gerar_graficos_inde_ano(df_cleaned, 2020)
+    gerar_graficos_inde_ano(df_cleaned, 2021)
+    gerar_graficos_inde_ano(df_cleaned, 2022)
+
+    # Gráfico comparativo de INDE entre anos
+    df_filter_2020 = df_cleaned[df_cleaned['ANO'] == 2020]
+    df_filter_2021 = df_cleaned[df_cleaned['ANO'] == 2021]
+    df_filter_2022 = df_cleaned[df_cleaned['ANO'] == 2022]
+
+    st.write("## Comparativo de INDE entre 2020, 2021 e 2022")
+    box_plot_comparative([df_filter_2020, df_filter_2021, df_filter_2022], ['2020', '2021', '2022'],
+                         'Comparação de INDE: 2020 vs 2021 vs 2022')
+
+    # Gráficos de Distribuição de Idade por ano
+    def gerar_graficos_idade_ano(df_idade, ano_especifico):
+        df_idade['IDADE'] = pd.to_numeric(df_idade['IDADE'], errors='coerce')
+        df_ano = df_idade[df_idade['ANO'] == ano_especifico]
+        idades = df_ano['IDADE'].dropna()
+        media_idade = idades.mean()
+
+        fig = make_subplots(rows=1, cols=2, subplot_titles=(f'ANO- {ano_especifico}', 'Boxplot'),
+                            column_widths=[0.6, 0.4])
+
+        # Subplot 1: Histograma
+        fig.add_trace(go.Histogram(x=idades, nbinsx=10, opacity=0.7, name=f'Histograma {ano_especifico}',
+                                   marker_color='blue'), row=1, col=1)
+
+        kde = gaussian_kde(idades)
+        x_vals = np.linspace(min(idades), max(idades), 100)
+        kde_vals = kde(x_vals)
+
+        fig.add_trace(go.Scatter(x=x_vals, y=kde_vals * len(idades), mode='lines', line=dict(color='#D2691E'), name='KDE'),
+                      row=1, col=1)
+
+        # Subplot 2: Boxplot com a média destacada
+        fig.add_trace(go.Box(y=idades, boxmean=True, marker_color='#D2691E', name='Boxplot'), row=1, col=2)
+
+        fig.add_annotation(x=1, y=media_idade, xref="x2", yref="y2", text=f"Média: {media_idade:.1f}", showarrow=False,
+                           font=dict(size=12, color="black"), align="center", bordercolor="black", borderwidth=1,
+                           borderpad=4, bgcolor="white", opacity=0.8)
+
+        fig.update_layout(title_text=f'Distribuição da Idade - {ano_especifico}', xaxis_title='Idade', yaxis_title='Frequência',
+                          template='plotly_white', showlegend=True, height=600, width=1000)
+
+        st.plotly_chart(fig)
+
+    # Gráficos de Distribuição de Idade por ano
+    st.write("## Distribuição de Idade por Ano")
+    gerar_graficos_idade_ano(df_cleaned, 2020)
+    gerar_graficos_idade_ano(df_cleaned, 2021)
+    gerar_graficos_idade_ano(df_cleaned, 2022)
+
+    # Gráfico de Radar por Aluno
+    st.write("## Gráfico de Radar por aluno")
+    df_radar = df_geral[['NOME', 'ANO', 'INDE', 'IAA', 'IEG', 'IPS', 'IDA', 'IPP', 'IPV', 'IAN']]
+
+    # Verificar se há dados válidos para o aluno e o ano
+    aluno_escolhido = st.selectbox('Escolha o aluno', options=df_radar['NOME'].unique())
+    anos_disponiveis = df_radar[df_radar['NOME'] == aluno_escolhido]['ANO'].unique()
+    ano_escolhido = st.selectbox('Escolha o ano', options=anos_disponiveis)
+
+    def calcular_dados_aluno(df, aluno, ano):
+        df_aluno = df[(df['NOME'] == aluno) & (df['ANO'] == ano)].drop(columns=['NOME', 'ANO'])
+
+        if df_aluno.empty:
+            return pd.DataFrame()  # Verificação adicional para evitar problemas de falta de dados
+
+        return df_aluno.T.reset_index().rename(columns={'index': 'Métricas', 0: 'Valores'})
+
+    df_aluno_selecionado = calcular_dados_aluno(df_radar, aluno_escolhido, ano_escolhido)
+
+    if not df_aluno_selecionado.empty:
+        radar_chart(df_aluno_selecionado, title=f'Desempenho de {aluno_escolhido} no ano {ano_escolhido}')
+    else:
+        st.error(f'Não foram encontrados dados para o aluno {aluno_escolhido} no ano {ano_escolhido}')
+
+
 def exibir_cleyton():
     st.subheader("Análises - Cleyton")
+
+    st.write("### Dashboard de Power BI")
+
+    power_bi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiZTBjMzg5NTktNDU5MC00OTc3LWE3YWUtMWE2ODQ1OTM1ZTg2IiwidCI6ImEwNDNmMzhlLTgzYTItNDVhNC1hY2YxLWIwZDNhY2EwYjEwMiJ9"
+
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: center;">
+            <iframe src="{power_bi_embed_url}" width="800" height="600" frameborder="0" allowFullScreen="true"></iframe>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 def exibir_analises():
