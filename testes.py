@@ -291,18 +291,44 @@ def exibir_cassia():
 def exibir_cleyton():
     st.subheader("Análises - Cleyton")
 
-    st.write("### Dashboard de Power BI")
+    tab1, tab2 = st.tabs(["Indicadores de Alunos Efetivos vs Faltas", "Dashboard Power BI"])
 
-    power_bi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiZTBjMzg5NTktNDU5MC00OTc3LWE3YWUtMWE2ODQ1OTM1ZTg2IiwidCI6ImEwNDNmMzhlLTgzYTItNDVhNC1hY2YxLWIwZDNhY2EwYjEwMiJ9"
+    with tab1:
+        st.write("""
+        ### Indicadores de Alunos Efetivos vs Faltas nas Disciplinas por Professores
 
-    st.markdown(
-        f"""
-        <div style="display: flex; justify-content: center;">
-            <iframe src="{power_bi_embed_url}" width="800" height="600" frameborder="0" allowFullScreen="true"></iframe>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        **Objetivo**: Este indicador foi criado para analisar a quantidade de desistências dos cursos oferecidos pela associação Passos Mágicos aos alunos, durante o período do ano 2021 até junho/2024.
+
+        **Conceitos**:
+        - **Alunos**: crianças e jovens do município de Embu-Guaçu.
+        - **Cursos ou Séries**: são programas de educação de qualidade ou educacionais oferecidos aos alunos.
+        - **Cursos Extras**: são programas de educação de qualidade ou educacionais para ampliação da visão de mundo, sendo considerados como extracurriculares. Todavia foi desmembrada a série Alfabetização e os cursos Inglês e Psicologia nesse indicador para melhor visualização dos resultados.  
+        - **Efetivos**: são os alunos que estão frequentando as aulas na Passos Mágicos.
+        - **Faltas**: olhando para o Diário de Aula, separamos os alunos que estão com Faltas não Justificadas.
+        - **Período**: trata-se do tempo em que o aluno realiza o curso ou série em cada dia possuindo o período manhã, tarde, noite e especial.
+        - **Período especial**: o aluno realiza os cursos ou séries aos finais de semana, ou seja, sábado ou domingo.
+
+        **Pontos relevantes do Indicador de Faltas**:
+        - Analisando o período de 2021 a 2024, temos uma queda nas faltas por alunos matriculados, sendo que 2022 saímos de 25% para 13% em 2023 (-13%), e até o momento em 2024 está com 11% de faltas. Isso para um total de 2.093 alunos efetivamente assistindo às aulas.
+        - Analisando os Turnos de Aulas, nós temos uma média 18% de Faltas, sendo o período da Manhã e Especial com 19%. Com isso, vimos que estamos na média das faltas no período analisado.
+        - Analisando as Disciplinas, no período vemos Polivalente com 47% de faltas, sendo que as demais seguem uma média de 19%. Mas esse percentual alto de faltas, se dá por causa do ano de 2022 com 58% que foi o primeiro ano de aula e provavelmente os alunos não entenderam o propósito do conteúdo passado em aula, mas vemos uma queda nos anos seguintes, sendo 21% em 2023 e até o momento em 2024 com 16%. Isso também se dá pela quantidade de alunos ter baixado muito, quase 80%, os que continuam frequentando as aulas parecem estar compreendendo o conteúdo. Seria uma boa ideia avaliar o conteúdo e satisfação dos alunos.
+        - Analisando os Professores, desconsiderando o Professor 20 (Português), que olhando no período está com uma média de 28% de alunos com faltas, mas como ele só trabalhou no ano de 2022 podemos desconsiderar. O nosso destaque com faltas é o Professor 10 (Inglês), com uma média de 27% de faltas. Podemos avaliar o conteúdo das aulas e a condução do professor para aumentar o interesse dos alunos pela aula, ainda mais sendo inglês, idioma fundamental hoje para um futuro promissor.
+        - Tirando o ano de 2021, com média de 24% para todos os Professores, a média desse valor vem reduzindo ao longo do tempo, sendo 13% em 2023 e 11% até o momento em 2024.
+        """)
+
+    with tab2:
+        st.write("### Dashboard de Power BI")
+
+        power_bi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiZTBjMzg5NTktNDU5MC00OTc3LWE3YWUtMWE2ODQ1OTM1ZTg2IiwidCI6ImEwNDNmMzhlLTgzYTItNDVhNC1hY2YxLWIwZDNhY2EwYjEwMiJ9"
+
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center;">
+                <iframe src="{power_bi_embed_url}" width="800" height="600" frameborder="0" allowFullScreen="true"></iframe>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 def exibir_analises():
