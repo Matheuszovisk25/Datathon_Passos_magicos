@@ -22,37 +22,50 @@ def exibir_visao_geral():
     """Exibe a seção de visão geral com texto descritivo e ícones."""
     st.image(logo, width=120)  
     st.title("Passos Mágicos :sparkles:")
-    st.subheader("Monitoramento e Impacto Social")
-
+    st.markdown("<h2 style='color: blue;'>Monitoramento e Impacto Social</h2>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    
     st.write("""
-    **Passos Mágicos** é uma organização não governamental dedicada a transformar a vida de crianças e adolescentes através da educação e do apoio social. 
-    Fundada com a missão de proporcionar oportunidades iguais de aprendizado e crescimento, a ONG oferece uma variedade de programas que vão desde 
-    apoio escolar até atividades extracurriculares, buscando sempre o desenvolvimento integral dos jovens atendidos. 
-
-    Nosso objetivo é capacitar esses jovens com habilidades e conhecimentos que os preparem para um futuro promissor, contribuindo para a construção de uma sociedade mais justa e igualitária.
-    Com a ajuda de nossos parceiros e apoiadores, continuamos a expandir nosso impacto, levando esperança e novas possibilidades para mais comunidades a cada ano.
+    **Passos Mágicos** é uma organização não governamental comprometida em transformar a vida de crianças e adolescentes por meio da educação e do apoio social. 
+    Com a missão de oferecer oportunidades iguais de aprendizado e crescimento, a ONG desenvolve uma ampla gama de programas, que vão desde 
+    apoio escolar até atividades extracurriculares, promovendo sempre o desenvolvimento integral dos jovens atendidos.
     """)
 
-    st.header("Impacto 2023")
-    st.write("Conheça os impactos da Passos Mágicos em 2023.")
+    st.markdown("<h2 style='color: blue;'>Nossa Missão</h2>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.write("""
+    Nosso objetivo é empoderar esses jovens com habilidades e conhecimentos que os preparem para um futuro brilhante, contribuindo para a construção de uma sociedade mais justa e igualitária.
+    Graças ao apoio de nossos parceiros e colaboradores, continuamos a expandir nosso impacto, levando esperança e novas oportunidades para mais comunidades a cada ano.
+    """)
+
+    st.markdown("<h2 style='color: blue;'>Impacto em 2023</h2>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.write("Aqui estão os resultados significativos que alcançamos em 2023:")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.markdown("<h1 style='text-align: center;'>4400</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>Pessoas impactadas</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Pessoas Impactadas</p>", unsafe_allow_html=True)
 
     with col2:
         st.markdown("<h1 style='text-align: center;'>1100</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>Alunos no programa de Aceleração do Conhecimento</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Alunos no Programa de Aceleração do Conhecimento</p>", unsafe_allow_html=True)
 
     with col3:
         st.markdown("<h1 style='text-align: center;'>100</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>Bolsistas em instituições de ensino particular</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Bolsistas em Instituições de Ensino Particular</p>", unsafe_allow_html=True)
 
     with col4:
         st.markdown("<h1 style='text-align: center;'>94</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center;'>Bolsistas em instituições de ensino superior</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>Bolsistas em Instituições de Ensino Superior</p>", unsafe_allow_html=True)
+
+    st.markdown("<h2 style='color: blue;'>Nossos Programas</h2>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.write("""
+    Nossos programas são projetados para atender às necessidades específicas dos jovens, promovendo seu crescimento acadêmico e emocional. 
+    Conheça nossas principais iniciativas:
+    """)
 
     icone_1 = Image.open("imagem_1_reduzida.png")
     icone_2 = Image.open("imagem_2_reduzida.png")
@@ -64,22 +77,24 @@ def exibir_visao_geral():
     with col1:
         st.image(icone_1, width=220)
         st.write("### Aceleração do Conhecimento")
-        st.write("Educação de qualidade, programas educacionais, assistência psicológica e ampliação da visão de mundo. Conheça mais sobre nosso trabalho.")
+        st.write("Educação de qualidade, com programas que incluem assistência psicológica e ampliação da visão de mundo. Junte-se a nós!")
 
     with col2:
         st.image(icone_2, width=220)
         st.write("### Programas Especiais")
-        st.write("Conheça nosso projeto de apadrinhamento e de intercâmbio, visando uma maior integração dos alunos com diferentes ambientes e culturas.")
+        st.write("Projetos de apadrinhamento e intercâmbio que promovem a integração cultural e o enriquecimento das experiências dos alunos.")
 
     with col3:
         st.image(icone_3, width=220)
         st.write("### Eventos e Ações Sociais")
-        st.write("Anualmente, em prol dos alunos, são promovidas campanhas de arrecadação para presentear as centenas de crianças e adolescentes Passos Mágicos.")
+        st.write("Campanhas anuais de arrecadação que proporcionam presentes e momentos especiais para nossas crianças e adolescentes.")
 
     with col4:
         st.image(icone_4, width=220)
         st.write("### Parceiros e Apoiadores")
-        st.write("Conheça nossas empresas parceiras e apoiadoras que nos ajudam a dar vida aos nossos projetos de transformação.")
+        st.write("Agradecemos a nossos colaboradores e empresas parceiras que tornam nossos projetos de transformação realidade.")
+
+
 
 def exibir_dados():
     """Exibe a seção de dados."""
@@ -319,12 +334,12 @@ def exibir_cleyton():
     with tab2:
         st.write("### Dashboard de Power BI")
 
-        power_bi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiZTBjMzg5NTktNDU5MC00OTc3LWE3YWUtMWE2ODQ1OTM1ZTg2IiwidCI6ImEwNDNmMzhlLTgzYTItNDVhNC1hY2YxLWIwZDNhY2EwYjEwMiJ9"
+        power_bi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiZTBjMzg5NTktNDU5MC00OTc3LWE3YWUtMWE2ODQ1OTM1ZTg2IiwidCI6ImEwNDNmMzhlLTgzYTItNDVhNC1hY2YxLWIwZDNhY2EwYjEwMiJ9&pageName=a0b089a779d2f91bc277"
 
         st.markdown(
             f"""
             <div style="display: flex; justify-content: center;">
-                <iframe src="{power_bi_embed_url}" width="800" height="600" frameborder="0" allowFullScreen="true"></iframe>
+                <iframe src="{power_bi_embed_url}" width="800" height="600" frameborder="0" allowFullScreen="True"></iframe>
             </div>
             """,
             unsafe_allow_html=True
@@ -339,7 +354,7 @@ def exibir_analises():
     
     selected_analysis = option_menu(
         menu_title="Selecione uma análise:",
-        options=["Ronaldo", "Cassia", "Cleyton"],  
+        options=["Matrículas vs Desistências nos Cursos ou Séries", "Cassia", "Alunos Efetivos vs Faltas nas Disciplinas por Professores"],  
         icons=["person-circle", "person-circle", "person-circle"],
         menu_icon="activity",
         default_index=0,
@@ -353,11 +368,11 @@ def exibir_analises():
     )
 
     
-    if selected_analysis == "Ronaldo":
+    if selected_analysis == "Matrículas vs Desistências nos Cursos ou Séries":
         exibir_ronaldo()
     elif selected_analysis == "Cassia":
         exibir_cassia()
-    elif selected_analysis == "Cleyton":
+    elif selected_analysis == "Alunos Efetivos vs Faltas nas Disciplinas por Professores":
         exibir_cleyton()
 
 
@@ -459,8 +474,27 @@ def exibir_contato():
     st.write("""
     Entre em contato com a ONG Passos Mágicos 
     """)
-    st.write("Email: ")
-    st.write("Telefone: ")
+    st.write("Email: passosmagicos@passosmagicos.org.br")
+    st.write("Telefone: (11) 98208-3282")
+
+def conclusao():
+    """Exibe a seção de conclusão."""
+    st.header("Conclusão")
+    st.write("""
+    Na **Passos Mágicos**, acreditamos que cada criança e adolescente merece a chance de um futuro melhor. 
+    Através de nossos programas e iniciativas, buscamos não apenas impactar a vida dos jovens, mas também 
+    inspirar uma mudança positiva nas comunidades em que atuamos.
+
+    Com o apoio de nossos parceiros, colaboradores e voluntários, continuaremos a expandir nosso alcance e a 
+    transformar vidas, criando um ciclo de aprendizado e crescimento que se perpetua. 
+
+    Junte-se a nós nessa jornada de esperança e transformação! Cada ação conta, e juntos podemos fazer a diferença 
+    na vida de muitos.
+    """)
+
+    st.write("Se você gostaria de saber mais ou contribuir, não hesite em nos contatar!")
+    st.write("Email: passosmagicos@passosmagicos.org.br")
+    st.write("Telefone: (11) 98208-3282")
 
 
 def exibir_option_menu():
@@ -468,8 +502,8 @@ def exibir_option_menu():
     with st.sidebar:
         selecao_menu = option_menu(
             menu_title="Menu",  
-            options=["Visão Geral", "Dados", "Análises", "Contato", "Previsões"],  
-            icons=["house", "bar-chart", "clipboard-data", "envelope", "sun"],  
+            options=["Visão Geral", "Dados", "Análises", "Contato", "Previsões", "Conclusão"],  
+            icons=["house", "bar-chart", "clipboard-data", "envelope", "sun", "check-circle"],  
             menu_icon="cast",  
             default_index=0,  
             styles={
@@ -494,8 +528,9 @@ def main():
     elif selecao_menu == "Contato":
         exibir_contato()
     elif selecao_menu == "Previsões":
-        exibir_previsoes() 
-
+        exibir_previsoes()
+    elif selecao_menu == "Conclusão":
+        conclusao()
     st.markdown("---")
 
 if __name__ == "__main__":
