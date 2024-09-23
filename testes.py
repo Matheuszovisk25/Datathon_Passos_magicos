@@ -22,7 +22,7 @@ def exibir_visao_geral():
     """Exibe a seção de visão geral com texto descritivo e ícones."""
     st.image(logo, width=120)  
     st.title("Passos Mágicos :sparkles:")
-    st.markdown("<h2 style='color: blue;'>Monitoramento e Impacto Social</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: blue;'>Quem somos</h2>", unsafe_allow_html=True)
     st.markdown("<hr>", unsafe_allow_html=True)
     
     st.write("""
@@ -95,14 +95,61 @@ def exibir_visao_geral():
         st.write("Agradecemos a nossos colaboradores e empresas parceiras que tornam nossos projetos de transformação realidade.")
 
 
-
 def exibir_dados():
     """Exibe a seção de dados."""
     st.image(logo, width=120)  
     st.header("Dados")
     st.write("""
-    Dados.
+    Esta seção apresenta os dados coletados e analisados.
     """)
+    
+    df_2020 = pd.read_csv("df_2020.csv")
+    df_2021 = pd.read_csv("df_2021.csv")
+    df_2022 = pd.read_csv("df_2022.csv")
+    df_geral = pd.read_csv("df_geral.csv")
+    df_dados_limpos = pd.read_csv("dados_limpos.csv")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        st.download_button(
+            label="DF 2020",
+            data=df_2020.to_csv(index=False).encode('utf-8'),
+            file_name='df_2020.csv',
+            mime='text/csv'
+        )
+
+    with col2:
+        st.download_button(
+            label="DF 2021",
+            data=df_2021.to_csv(index=False).encode('utf-8'),
+            file_name='df_2021.csv',
+            mime='text/csv'
+        )
+
+    with col3:
+        st.download_button(
+            label="DF 2022",
+            data=df_2022.to_csv(index=False).encode('utf-8'),
+            file_name='df_2022.csv',
+            mime='text/csv'
+        )
+
+    with col4:
+        st.download_button(
+            label="DF GERAL",
+            data=df_geral.to_csv(index=False).encode('utf-8'),
+            file_name='df_geral.csv',
+            mime='text/csv'
+        )
+
+    with col5:
+        st.download_button(
+            label="DF dados_limpos",
+            data=df_dados_limpos.to_csv(index=False).encode('utf-8'),
+            file_name='dados_limpos.csv',
+            mime='text/csv'
+        )
 
 def exibir_ronaldo():
     """Exibe a seção Ronaldo com um submenu utilizando tabs."""
