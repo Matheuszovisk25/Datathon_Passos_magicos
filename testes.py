@@ -219,6 +219,22 @@ def exibir_cassia():
 
     df_cleaned = df_geral.dropna()
 
+    def processar_dist_idade_todos_anos(df_idade):
+        df_idade['IDADE'] = pd.to_numeric(df_idade['IDADE'], errors='coerce')
+        anos = sorted(df_idade['ANO'].unique())
+        distribuicoes_idade = pd.DataFrame()
+
+        for ano in anos:
+            df_ano = df_idade[df_idade['ANO'] == ano]
+            dist_idade = df_ano['IDADE'].value_counts().sort_index()
+            distribuicoes_idade[f'ANO {ano}'] = dist_idade
+
+        distribuicoes_idade = distribuicoes_idade.fillna(0)
+        distribuicoes_idade['TOTAL'] = distribuicoes_idade.sum(axis=1)
+        return distribuicoes_idade
+
+    df_idade_dist = processar_dist_idade_todos_anos(df_cleaned)
+
     def gerar_graficos_inde_ano(df_inde, ano_especifico):
         df_inde['INDE'] = pd.to_numeric(df_inde['INDE'], errors='coerce')
         df_ano = df_inde[df_inde['ANO'] == ano_especifico]
@@ -279,18 +295,55 @@ def exibir_cassia():
 
         st.plotly_chart(fig)
 
+    def radar_chart(df_aluno, title):
+        categorias = df_aluno.columns[1:]
+
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatterpolar(
+            r=df_aluno.iloc[0, 1:].values,  
+            theta=categorias,
+            fill='toself',
+            name='Desempenho'
+        ))
+
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, 10]
+                )),
+            showlegend=False,
+            title=title
+        )
+
+        return fig
+
     def box_plot_comparative(data_anos, labels, title):
         fig = go.Figure()
         for i, data in enumerate(data_anos):
             data['INDE'] = pd.to_numeric(data['INDE'], errors='coerce')
+            
             fig.add_trace(go.Box(y=data['INDE'], boxmean=True, boxpoints=False, marker_color='#D2691E', name=labels[i]))
-
+            
             mean_value = np.mean(data['INDE'])
+            
             fig.add_trace(go.Scatter(x=[i-0.2, i+0.2], y=[mean_value, mean_value], mode="lines",
-                                     line=dict(color="red", width=2, dash='dash'), name=f'Média {labels[i]}: {mean_value:.1f}'))
+                                     line=dict(color="red", width=2, dash='dash'), 
+                                     name=f'Média {labels[i]}: {mean_value:.1f}'))
 
-        fig.update_layout(title=title, yaxis_title='Valores', xaxis_title='Anos', template='plotly_white', boxgap=0.30,
-                          boxgroupgap=0.3, showlegend=True, height=600, width=1000)
+        fig.update_layout(
+            title=title,
+            yaxis_title='Valores',
+            xaxis_title='Anos',
+            template='plotly_white',
+            boxgap=0.30,
+            boxgroupgap=0.3,
+            showlegend=True,
+            height=600,
+            width=1000
+        )
+        
         st.plotly_chart(fig)
 
     def plot_barras(df, ano, coluna_pedra):
@@ -317,38 +370,87 @@ def exibir_cassia():
 
         st.plotly_chart(fig)
 
-    st.write("## Análise de INDE")
-    st.write("- Índice do Desenvolvimento Educacional (INDE): Métrica de Processo Avaliativo Geral do Aluno, esta faz a ponderação dos indicadores IAN, IDA, IEG, IAA, IPS, IPP e IPV. - Veremos a media das notas por ano")
-    st.write("- Para o ano de 2020 o INDE(Índice do Desenvolvimento Educacional) a maior concentraçao está entre os valores 7 a 8 o que indica que a média gira em torno de 7 a 7,5, mais precisamente 7,3 como indica o bloxpot com a média, logo abaixo. A curva KDE gira em torno disso e a distribuição tem uma cauda levemente à direita, indicando valores maiores esparsos até cerca de 10.")
-    gerar_graficos_inde_ano(df_cleaned, 2020)
-    st.write("Já para o ano de 2021 no que se refere ao INDE(Índice do Desenvolvimento Educacional) há uma diferença comparada com o ano anterior indicando que a maior parte dos dados está concentrado entre 6 e 7, com poucos valores mais altos (acima de 8). Para este gráfico, a média gira em torno de 6,5 a 7, com um valor preciso de 6,9 como indica o grafico de bloxpot. A curva KDE gira em torno disso e nos mostra que os dados estão distribuídos de maneira relativamente simétrica ao redor desse intervalo.")
-    gerar_graficos_inde_ano(df_cleaned, 2021)
-    st.write("- Para o ano de 2022 o INDE(Índice do Desenvolvimento Educacional)  maioria dos valores do INDE variou entre **6** e **8**, com o valor **7** sendo o mais comum. A média dos valores parece estar em torno de **7**, já que os valores mais frequentes estão nessa região. O que reflete uma tendência similar aos anos anteriores. A distribuição mostra uma simetria ao redor de 7.")
-    gerar_graficos_inde_ano(df_cleaned, 2022)
-
-    st.write("## Distribuição de Idades")
-    st.write("- Em 2020, a ONG Passos Mágicos trabalhou predominantemente com jovens cuja idade girava em torno de 12 anos. A curva de densidade suaviza a distribuição etária, revelando que, embora houvesse algumas pessoas mais jovens e mais velhas, a maior concentração estava entre 11 e 13 anos. O boxplot nos mostra que 50% da população atendida tinha idades entre 11 e 14 anos, com poucos casos abaixo de 8 ou acima de 19. A mediana de 12 anos reforça que a ONG atua majoritariamente com um grupo jovem, nos primeiros anos da adolescência, com características etárias bastante homogêneas.")
-    gerar_graficos_idade_ano(df_cleaned, 2020)
-    st.write("Em 2021, a ONG Passos Mágicos continuou a atender predominantemente jovens, com a idade média subindo levemente para 12,8 anos. A distribuição de idades, representada pelo histograma e suavizada pela curva de densidade, mostra uma concentração significativa entre 12 e 13 anos, sendo essa a faixa etária com maior frequência. O número de pessoas com idades abaixo de 10 anos ou acima de 15 anos foi relativamente baixo, indicando um foco claro em adolescentes no início de sua jornada.")
-    st.write("O boxplot confirma essa tendência, revelando que 50% dos atendidos tinham idades entre 12 e 14 anos, com algumas observações atípicas abaixo de 10 e acima de 16 anos. A mediana de 12 anos permanece próxima à média, reforçando a homogeneidade etária desse grupo jovem. Esse perfil etário sugere que a ONG continuou a trabalhar com uma população predominantemente adolescente, consolidando seu impacto na vida de jovens em um momento crucial de suas formações pessoais e sociais.")
-    gerar_graficos_idade_ano(df_cleaned, 2021)
-    st.write("Em 2022, observou-se que a idade média dos beneficiados pela ONG subiu ligeiramente para 13,1 anos. A análise da distribuição etária, representada por um histograma, revela um padrão semelhante ao dos anos anteriores. Atendimentos a pessoas com menos de 10 anos ou mais de 15 foram escassos, destacando o foco da ONG nos adolescentes.")
-    st.write("O boxplot reforça essa tendência, mostrando que metade dos atendidos tinha entre aproximadamente 12 e 14 anos, com algumas exceções pontuais abaixo dos 10 e acima dos 16 anos. A mediana de 13 anos, próxima à média, sugere que a tendência permanece consistente com os anos anteriores")
-    gerar_graficos_idade_ano(df_cleaned, 2022)
-
+    tab1, tab2, tab3, tab4 = st.tabs(["Análise de INDE", "Distribuição de Idades", "Gráfico de Teia", "Comparativo de INDE"])
     df_filter_2020 = df_cleaned[df_cleaned['ANO'] == 2020]
     df_filter_2021 = df_cleaned[df_cleaned['ANO'] == 2021]
     df_filter_2022 = df_cleaned[df_cleaned['ANO'] == 2022]
 
-    st.write("## Comparativo de INDE entre 2020, 2021 e 2022")
-    box_plot_comparative([df_filter_2020, df_filter_2021, df_filter_2022], ['2020', '2021', '2022'],
+    with tab1:
+        st.write("## Análise de INDE")
+        st.write("- Índice do Desenvolvimento Educacional (INDE): Métrica de Processo Avaliativo Geral do Aluno, esta faz a ponderação dos indicadores IAN, IDA, IEG, IAA, IPS, IPP e IPV. - Veremos a media das notas por ano")
+        st.write("- Para o ano de 2020 o INDE(Índice do Desenvolvimento Educacional) a maior concentraçao está entre os valores 7 a 8 o que indica que a média gira em torno de 7 a 7,5, mais precisamente 7,3 como indica o bloxpot com a média, logo abaixo. A curva KDE gira em torno disso e a distribuição tem uma cauda levemente à direita, indicando valores maiores esparsos até cerca de 10.")
+        gerar_graficos_inde_ano(df_cleaned, 2020)
+        st.write("Já para o ano de 2021 no que se refere ao INDE(Índice do Desenvolvimento Educacional) há uma diferença comparada com o ano anterior indicando que a maior parte dos dados está concentrado entre 6 e 7, com poucos valores mais altos (acima de 8). Para este gráfico, a média gira em torno de 6,5 a 7, com um valor preciso de 6,9 como indica o grafico de bloxpot. A curva KDE gira em torno disso e nos mostra que os dados estão distribuídos de maneira relativamente simétrica ao redor desse intervalo.")
+        gerar_graficos_inde_ano(df_cleaned, 2021)
+        st.write("- Para o ano de 2022 o INDE(Índice do Desenvolvimento Educacional)  maioria dos valores do INDE variou entre **6** e **8**, com o valor **7** sendo o mais comum. A média dos valores parece estar em torno de **7**, já que os valores mais frequentes estão nessa região. O que reflete uma tendência similar aos anos anteriores. A distribuição mostra uma simetria ao redor de 7.")
+        gerar_graficos_inde_ano(df_cleaned, 2022)
+        
+
+        st.write("## Comparativo de INDE entre 2020, 2021 e 2022")
+        box_plot_comparative([df_filter_2020, df_filter_2021, df_filter_2022], ['2020', '2021', '2022'],
                          'Comparação de INDE: 2020 vs 2021 vs 2022')
 
-    st.write("## Gráfico de Barras - Distribuição de Desempenho")
-    plot_barras(df_2020, '2020', 'PEDRA_2020')
-    plot_barras(df_2021, '2021', 'PEDRA_2021')
-    plot_barras(df_2022, '2022', 'PEDRA_2022')
     
+    with tab2:
+        st.write("## Verficando a distribuiçao dos alunos por faixa etaria")
+        st.write("""A tabela apresenta abaixo a distribuição de idades dos alunos da ONG Passos Mágicos ao longo dos anos de 2020, 2021 e 2022, com o total acumulado por faixa etária. Observamos que a idade dos alunos varia entre 7 e 20 anos, com as maiores concentrações em faixas específicas, como as idades de 13 e 12 anos. No ano de 2022, o número de alunos é maior, com um total de 862, em comparação com 684 em 2021 e 725 em 2020.
+
+Nas estatísticas descritivas por ano, observamos um aumento gradual na idade média dos alunos, de 12 anos em 2020 para 13,14 anos em 2022. A variação (desvio padrão) diminui ao longo dos anos, indicando uma concentração maior de alunos em torno de idades específicas, especialmente em 2022, quando o desvio padrão é de 1,36. Os valores mínimos e máximos para cada ano também mostram que os alunos mais novos e mais velhos estão progredindo em idade com o passar do tempo.
+
+Além disso, os quartis sugerem que a maioria dos alunos tem entre 10 e 13 anoao longo dos três anos analisados.""")
+        st.write("### Distribuições de Idade por Ano com Soma Total de Alunos:")
+        st.dataframe(df_idade_dist)  
+        st.write("### 2020")
+        st.write("- Em 2020, a ONG Passos Mágicos trabalhou predominantemente com jovens cuja idade girava em torno de 12 anos. A curva de densidade suaviza a distribuição etária, revelando que, embora houvesse algumas pessoas mais jovens e mais velhas, a maior concentração estava entre 11 e 13 anos. O boxplot nos mostra que 50% da população atendida tinha idades entre 11 e 14 anos, com poucos casos abaixo de 8 ou acima de 19. A mediana de 12 anos reforça que a ONG atua majoritariamente com um grupo jovem, nos primeiros anos da adolescência, com características etárias bastante homogêneas.")
+        gerar_graficos_idade_ano(df_cleaned, 2020)
+        st.write("### 2021")
+        st.write("Em 2021, a ONG Passos Mágicos continuou a atender predominantemente jovens, com a idade média subindo levemente para 12,8 anos. A distribuição de idades, representada pelo histograma e suavizada pela curva de densidade, mostra uma concentração significativa entre 12 e 13 anos, sendo essa a faixa etária com maior frequência. O número de pessoas com idades abaixo de 10 anos ou acima de 15 anos foi relativamente baixo, indicando um foco claro em adolescentes no início de sua jornada.")
+        st.write("O boxplot confirma essa tendência, revelando que 50% dos atendidos tinham idades entre 12 e 14 anos, com algumas observações atípicas abaixo de 10 e acima de 16 anos. A mediana de 12 anos permanece próxima à média, reforçando a homogeneidade etária desse grupo jovem. Esse perfil etário sugere que a ONG continuou a trabalhar com uma população predominantemente adolescente, consolidando seu impacto na vida de jovens em um momento crucial de suas formações pessoais e sociais.")
+        gerar_graficos_idade_ano(df_cleaned, 2021)
+        st.write("### 2022")
+        st.write("Em 2022, observou-se que a idade média dos beneficiados pela ONG subiu ligeiramente para 13,1 anos. A análise da distribuição etária, representada por um histograma, revela um padrão semelhante ao dos anos anteriores. Atendimentos a pessoas com menos de 10 anos ou mais de 15 foram escassos, destacando o foco da ONG nos adolescentes.")
+        st.write("O boxplot reforça essa tendência, mostrando que metade dos atendidos tinha entre aproximadamente 12 e 14 anos, com algumas exceções pontuais abaixo dos 10 e acima dos 16 anos. A mediana de 13 anos, próxima à média, sugere que a tendência permanece consistente com os anos anteriores")
+        gerar_graficos_idade_ano(df_cleaned, 2022)
+    
+    with tab3:
+        st.write("## As pedras preciosas e a perfomance dos alunos")
+        st.write(""" 
+A performance dos alunos é representada por pedras preciosas, conforme indicado pelo INDE. O uso dessas pedras tem como objetivo medir o sucesso acadêmico dos alunos ao longo de sua estadia na ONG, além de gerar motivação e inspiração para que busquem novos níveis de crescimento. Cada pedra representa uma faixa específica de desempenho. Por exemplo:
+Pedra Quartzo
+
+Esta é a pedra inicial de todo aluno. Indica que os alunos que recebem esta pedra têm um desempenho geral, baseado no INDE, que varia entre 2,4 e 5,5.
+Pedra Ágata
+
+Logo vem pedra Ágata esta indica que os alunos que recebem esta pedra seu desempenho geral baseado no indicador INDE, varia entre 5,5 a 6,8.
+Pedra Ametista
+
+A terceira pedra, que é a Ametista indica que os alunos que recebem esta pedra seu desempenho geral baseado no indicador INDE, varia entre 5,5 a 8,2.
+Pedra Topazio
+
+E a pedra Topazio indica que os alunos que recebem esta pedra seu desempenho geral baseado no indicador INDE, varia entre 8,2 a 9,3.""")
+        st.write("## Gráfico de Barras - Distribuição de Desempenho")
+        plot_barras(df_2020, '2020', 'PEDRA_2020')
+        plot_barras(df_2021, '2021', 'PEDRA_2021')
+        plot_barras(df_2022, '2022', 'PEDRA_2022')
+
+    with tab4:
+        st.write("## Gráfico de Teia - Desempenho dos Alunos")
+        aluno_selecionado = st.selectbox('Aluno:', df_geral['NOME'].unique())
+        ano_selecionado = st.selectbox('Ano:', df_geral['ANO'].unique())
+
+        def calcular_dados_aluno(df, aluno, ano):
+            df_filtrado = df[(df['NOME'] == aluno) & (df['ANO'] == ano)]
+            return df_filtrado
+
+        df_aluno = calcular_dados_aluno(df_cleaned, aluno_selecionado, ano_selecionado)
+
+        if df_aluno.empty:
+            st.write(f"Sem dados de performance para o aluno {aluno_selecionado} no ano {ano_selecionado}.")
+        else:
+            st.write(df_aluno)
+            fig = radar_chart(df_aluno, title=f'Performance do {aluno_selecionado} - ano {ano_selecionado}')
+            st.plotly_chart(fig)
+
 
 def exibir_cleyton():
     st.subheader("Análises - Cleyton")
