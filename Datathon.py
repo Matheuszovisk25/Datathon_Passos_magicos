@@ -816,7 +816,7 @@ def conclusao():
 
     st.markdown("""
 <p style="text-align: center;">
-Você pode acessar nosso <a href="https://github.com/Matheuszovisk25/tech_challenge_4?tab=readme-ov-file" target="_blank">GitHub</a>
+Você pode acessar nosso <a href="https://github.com/Matheuszovisk25/Datathon_Passos_magicos" target="_blank">GitHub</a>
 </p>
 <h2>LinkedIn</h2>
 <p>
